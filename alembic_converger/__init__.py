@@ -5,7 +5,7 @@ This package provides tools to automatically detect and converge multiple Alembi
 migration heads by generating minimal merge migrations without schema operations.
 """
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 from alembic_converger.converge import converge_migrations
 from alembic_converger.errors import (

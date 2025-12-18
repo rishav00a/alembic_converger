@@ -1,7 +1,7 @@
 # Alembic Converger
 
 [![PyPI version](https://img.shields.io/pypi/v/alembic-converger.svg)](https://pypi.org/project/alembic-converger/)
-[![Documentation Status](https://readthedocs.org/projects/alembic-converger/badge/?version=latest)](https://alembic-converger.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/alembic-converger/badge/?version=latest)](https://alembic-converger.readthedocs.io/en/latest/README.html)
 [![Python Support](https://img.shields.io/pypi/pyversions/alembic-converger.svg)](https://pypi.org/project/alembic-converger/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
