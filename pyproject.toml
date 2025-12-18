@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "alembic-converger"
-version = "0.1.2"
+version = "0.1.3"
 description = "Safely converge Alembic migration graphs by generating minimal merge migrations"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -45,7 +45,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/rishav00a/alembic_converger"
-Documentation = "https://alembic-converger.readthedocs.io/"
+Documentation = "https://alembic-converger.readthedocs.io/en/latest/README.html"
 Issues = "https://github.com/rishav00a/alembic_converger/issues"
 Repository = "https://github.com/rishav00a/alembic_converger"
 

@@ -387,7 +387,7 @@ Powered by:
 
 ## Support
 
-- 📖 [Documentation](https://alembic-converger.readthedocs.io/)
+- 📖 [Documentation](https://alembic-converger.readthedocs.io/en/latest/README.html)
 - 🐛 [Issue Tracker](https://github.com/rishav00a/alembic_converger/issues)
 - 💬 [Discussions](https://github.com/rishav00a/alembic_converger/discussions)
 
