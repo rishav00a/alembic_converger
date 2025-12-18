@@ -1,6 +1,6 @@
 # Alembic Converger
 
-[![PyPI version](https://badge.fury.io/py/alembic-converger.svg)](https://badge.fury.io/py/alembic-converger)
+[![PyPI version](https://img.shields.io/pypi/v/alembic-converger.svg)](https://pypi.org/project/alembic-converger/)
 [![Python Support](https://img.shields.io/pypi/pyversions/alembic-converger.svg)](https://pypi.org/project/alembic-converger/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -304,7 +304,7 @@ alembic_converger/
 ```bash
 # Clone the repository
 git clone https://github.com/rishav00a/alembic_converger.git
-cd alembic-converger
+cd alembic_converger
 
 # Create virtual environment
 python -m venv venv
