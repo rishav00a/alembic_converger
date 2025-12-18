@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>alembic_converger &mdash; alembic-converger 0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="alembic_converger package" href="alembic_converger.html" />
+    <link rel="prev" title="alembic-converger documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            alembic-converger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">alembic_converger</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html">alembic_converger package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">alembic-converger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">alembic_converger</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="alembic-converger">
+<h1>alembic_converger<a class="headerlink" href="#alembic-converger" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="alembic_converger.html">alembic_converger package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger.cli">alembic_converger.cli module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger.config">alembic_converger.config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.config.get_revision_map"><code class="docutils literal notranslate"><span class="pre">get_revision_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.config.get_script_directory"><code class="docutils literal notranslate"><span class="pre">get_script_directory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.config.load_alembic_config"><code class="docutils literal notranslate"><span class="pre">load_alembic_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger.converge">alembic_converger.converge module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.converge.ConvergenceResult"><code class="docutils literal notranslate"><span class="pre">ConvergenceResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.converge.converge_migrations"><code class="docutils literal notranslate"><span class="pre">converge_migrations()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger.errors">alembic_converger.errors module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.errors.ConfigurationError"><code class="docutils literal notranslate"><span class="pre">ConfigurationError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.errors.ConvergenceError"><code class="docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.errors.GraphError"><code class="docutils literal notranslate"><span class="pre">GraphError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.errors.MultipleBasesError"><code class="docutils literal notranslate"><span class="pre">MultipleBasesError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.errors.SchemaConflictError"><code class="docutils literal notranslate"><span class="pre">SchemaConflictError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.errors.ValidationError"><code class="docutils literal notranslate"><span class="pre">ValidationError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger.graph">alembic_converger.graph module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.graph.get_common_ancestor"><code class="docutils literal notranslate"><span class="pre">get_common_ancestor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.graph.get_heads_from_base"><code class="docutils literal notranslate"><span class="pre">get_heads_from_base()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.graph.get_merge_pairs"><code class="docutils literal notranslate"><span class="pre">get_merge_pairs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.graph.is_descendant_of"><code class="docutils literal notranslate"><span class="pre">is_descendant_of()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.graph.sort_heads_deterministically"><code class="docutils literal notranslate"><span class="pre">sort_heads_deterministically()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.graph.validate_single_base"><code class="docutils literal notranslate"><span class="pre">validate_single_base()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger.merge">alembic_converger.merge module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.merge.create_merge_migration"><code class="docutils literal notranslate"><span class="pre">create_merge_migration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.merge.delete_merge_migration"><code class="docutils literal notranslate"><span class="pre">delete_merge_migration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.merge.has_schema_operations"><code class="docutils literal notranslate"><span class="pre">has_schema_operations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.merge.validate_merge_is_empty"><code class="docutils literal notranslate"><span class="pre">validate_merge_is_empty()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger.utils">alembic_converger.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.utils.format_revision_id"><code class="docutils literal notranslate"><span class="pre">format_revision_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.utils.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.utils.resolve_config_path"><code class="docutils literal notranslate"><span class="pre">resolve_config_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.utils.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger.validate">alembic_converger.validate module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.validate.check_database_available"><code class="docutils literal notranslate"><span class="pre">check_database_available()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.validate.validate_upgrade"><code class="docutils literal notranslate"><span class="pre">validate_upgrade()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alembic_converger.html#module-alembic_converger">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.ConfigurationError"><code class="docutils literal notranslate"><span class="pre">ConfigurationError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.ConvergenceError"><code class="docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.MultipleBasesError"><code class="docutils literal notranslate"><span class="pre">MultipleBasesError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.SchemaConflictError"><code class="docutils literal notranslate"><span class="pre">SchemaConflictError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.ValidationError"><code class="docutils literal notranslate"><span class="pre">ValidationError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alembic_converger.html#alembic_converger.converge_migrations"><code class="docutils literal notranslate"><span class="pre">converge_migrations()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="alembic-converger documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="alembic_converger.html" class="btn btn-neutral float-right" title="alembic_converger package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rishav Sinha.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

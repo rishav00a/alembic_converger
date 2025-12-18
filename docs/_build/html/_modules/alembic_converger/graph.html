@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>alembic_converger.graph &mdash; alembic-converger 0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            alembic-converger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">alembic_converger</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">alembic-converger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">alembic_converger.graph</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for alembic_converger.graph</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Migration graph analysis and traversal utilities.</span>
+
+<span class="sd">This module provides functions for analyzing the Alembic migration DAG,</span>
+<span class="sd">including head detection, ancestor queries, and graph validation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic.script.revision</span><span class="w"> </span><span class="kn">import</span> <span class="n">RevisionMap</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic_converger.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphError</span><span class="p">,</span> <span class="n">MultipleBasesError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic_converger.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_revision_id</span><span class="p">,</span> <span class="n">get_logger</span>
+
+
+<div class="viewcode-block" id="get_heads_from_base">
+<a class="viewcode-back" href="../../alembic_converger.html#alembic_converger.graph.get_heads_from_base">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_heads_from_base</span><span class="p">(</span><span class="n">revision_map</span><span class="p">:</span> <span class="n">RevisionMap</span><span class="p">,</span> <span class="n">base_revision</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find all heads that descend from the given base revision.</span>
+
+<span class="sd">    A head is a revision with no descendants. This function finds all heads</span>
+<span class="sd">    that can be reached by traversing forward from the base revision.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        revision_map: Alembic RevisionMap instance.</span>
+<span class="sd">        base_revision: Starting revision ID.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of head revision IDs that descend from base.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        GraphError: If base revision doesn&#39;t exist or graph traversal fails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get the base revision script</span>
+        <span class="n">revision_map</span><span class="o">.</span><span class="n">get_revision</span><span class="p">(</span><span class="n">base_revision</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">GraphError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Base revision &#39;</span><span class="si">{</span><span class="n">base_revision</span><span class="si">}</span><span class="s2">&#39; not found in migration graph: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finding heads from base: </span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">base_revision</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get all heads in the revision map</span>
+    <span class="n">all_heads</span> <span class="o">=</span> <span class="n">revision_map</span><span class="o">.</span><span class="n">heads</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All heads in graph: </span><span class="si">{</span><span class="p">[</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">all_heads</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Filter heads that descend from base</span>
+    <span class="n">descendant_heads</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">all_heads</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_descendant_of</span><span class="p">(</span><span class="n">revision_map</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">base_revision</span><span class="p">):</span>
+            <span class="n">descendant_heads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">descendant_heads</span><span class="p">)</span><span class="si">}</span><span class="s2"> head(s) descending from &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">base_revision</span><span class="p">)</span><span class="si">}</span><span class="s2">: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">[</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">descendant_heads</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">descendant_heads</span></div>
+
+
+
+<div class="viewcode-block" id="is_descendant_of">
+<a class="viewcode-back" href="../../alembic_converger.html#alembic_converger.graph.is_descendant_of">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_descendant_of</span><span class="p">(</span><span class="n">revision_map</span><span class="p">:</span> <span class="n">RevisionMap</span><span class="p">,</span> <span class="n">revision</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ancestor</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if revision is a descendant of ancestor.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        revision_map: Alembic RevisionMap instance.</span>
+<span class="sd">        revision: Revision to check.</span>
+<span class="sd">        ancestor: Potential ancestor revision.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if revision descends from ancestor, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">revision</span> <span class="o">==</span> <span class="n">ancestor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get all revisions between ancestor and revision (inclusive)</span>
+        <span class="c1"># iterate_revisions goes backwards from revision to base</span>
+        <span class="k">for</span> <span class="n">rev</span> <span class="ow">in</span> <span class="n">revision_map</span><span class="o">.</span><span class="n">iterate_revisions</span><span class="p">(</span>
+            <span class="n">revision</span><span class="p">,</span> <span class="n">ancestor</span><span class="p">,</span> <span class="n">implicit_base</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">rev</span><span class="o">.</span><span class="n">revision</span> <span class="o">==</span> <span class="n">ancestor</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="c1"># If iteration fails, they&#39;re not related</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="validate_single_base">
+<a class="viewcode-back" href="../../alembic_converger.html#alembic_converger.graph.validate_single_base">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_single_base</span><span class="p">(</span><span class="n">revision_map</span><span class="p">:</span> <span class="n">RevisionMap</span><span class="p">,</span> <span class="n">heads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate that all heads share a single common base.</span>
+
+<span class="sd">    This ensures that the heads can be safely merged - they must all</span>
+<span class="sd">    descend from a common ancestor.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        revision_map: Alembic RevisionMap instance.</span>
+<span class="sd">        heads: List of head revision IDs.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        MultipleBasesError: If heads have multiple unrelated bases.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Validating that all heads share a common base&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Find common ancestor of all heads</span>
+    <span class="n">common_ancestor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">head</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">heads</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Start with first head&#39;s ancestors</span>
+            <span class="n">common_ancestor</span> <span class="o">=</span> <span class="n">head</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Find LCA with next head</span>
+            <span class="n">common_ancestor</span> <span class="o">=</span> <span class="n">get_common_ancestor</span><span class="p">(</span><span class="n">revision_map</span><span class="p">,</span> <span class="n">common_ancestor</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">common_ancestor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MultipleBasesError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Heads </span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">heads</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">head</span><span class="p">)</span><span class="si">}</span><span class="s2"> have no common ancestor. &quot;</span>
+                    <span class="s2">&quot;Cannot safely converge unrelated migration branches.&quot;</span>
+                <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;All heads share common ancestor: </span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">common_ancestor</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_common_ancestor">
+<a class="viewcode-back" href="../../alembic_converger.html#alembic_converger.graph.get_common_ancestor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_common_ancestor</span><span class="p">(</span>
+    <span class="n">revision_map</span><span class="p">:</span> <span class="n">RevisionMap</span><span class="p">,</span> <span class="n">rev1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rev2</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the lowest common ancestor of two revisions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        revision_map: Alembic RevisionMap instance.</span>
+<span class="sd">        rev1: First revision ID.</span>
+<span class="sd">        rev2: Second revision ID.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Common ancestor revision ID, or None if no common ancestor exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get all ancestors of rev1</span>
+    <span class="n">ancestors1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">rev</span> <span class="ow">in</span> <span class="n">revision_map</span><span class="o">.</span><span class="n">iterate_revisions</span><span class="p">(</span><span class="n">rev1</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span><span class="p">):</span>
+            <span class="n">ancestors1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rev</span><span class="o">.</span><span class="n">revision</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Find first ancestor of rev2 that&#39;s also an ancestor of rev1</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">rev</span> <span class="ow">in</span> <span class="n">revision_map</span><span class="o">.</span><span class="n">iterate_revisions</span><span class="p">(</span><span class="n">rev2</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">rev</span><span class="o">.</span><span class="n">revision</span> <span class="ow">in</span> <span class="n">ancestors1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">rev</span><span class="o">.</span><span class="n">revision</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="sort_heads_deterministically">
+<a class="viewcode-back" href="../../alembic_converger.html#alembic_converger.graph.sort_heads_deterministically">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sort_heads_deterministically</span><span class="p">(</span><span class="n">heads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort heads deterministically for reproducible convergence.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        heads: List of head revision IDs.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Sorted list of head revision IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Sort alphabetically for deterministic behavior</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_merge_pairs">
+<a class="viewcode-back" href="../../alembic_converger.html#alembic_converger.graph.get_merge_pairs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_merge_pairs</span><span class="p">(</span><span class="n">heads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate pairs of heads to merge.</span>
+
+<span class="sd">    For efficient convergence, we merge heads pairwise until only one remains.</span>
+<span class="sd">    This generates the minimal number of merge operations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        heads: List of head revision IDs (should be sorted deterministically).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of (head1, head2) tuples to merge.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1"># Sort for determinism</span>
+    <span class="n">sorted_heads</span> <span class="o">=</span> <span class="n">sort_heads_deterministically</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span>
+
+    <span class="c1"># For N heads, we need N-1 merges</span>
+    <span class="c1"># We&#39;ll merge pairwise: (h1, h2) -&gt; m1, then (m1, h3) -&gt; m2, etc.</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Start with first two heads</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sorted_heads</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">sorted_heads</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sorted_heads</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">pairs</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rishav Sinha.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,753 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>alembic_converger package &mdash; alembic-converger 0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="alembic_converger" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            alembic-converger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">alembic_converger</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">alembic_converger package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger.cli">alembic_converger.cli module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger.config">alembic_converger.config module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.config.get_revision_map"><code class="docutils literal notranslate"><span class="pre">get_revision_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.config.get_script_directory"><code class="docutils literal notranslate"><span class="pre">get_script_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.config.load_alembic_config"><code class="docutils literal notranslate"><span class="pre">load_alembic_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger.converge">alembic_converger.converge module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.converge.ConvergenceResult"><code class="docutils literal notranslate"><span class="pre">ConvergenceResult</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.converge.converge_migrations"><code class="docutils literal notranslate"><span class="pre">converge_migrations()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger.errors">alembic_converger.errors module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.errors.ConfigurationError"><code class="docutils literal notranslate"><span class="pre">ConfigurationError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.errors.ConvergenceError"><code class="docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.errors.GraphError"><code class="docutils literal notranslate"><span class="pre">GraphError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.errors.MultipleBasesError"><code class="docutils literal notranslate"><span class="pre">MultipleBasesError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.errors.SchemaConflictError"><code class="docutils literal notranslate"><span class="pre">SchemaConflictError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.errors.ValidationError"><code class="docutils literal notranslate"><span class="pre">ValidationError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger.graph">alembic_converger.graph module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.graph.get_common_ancestor"><code class="docutils literal notranslate"><span class="pre">get_common_ancestor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.graph.get_heads_from_base"><code class="docutils literal notranslate"><span class="pre">get_heads_from_base()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.graph.get_merge_pairs"><code class="docutils literal notranslate"><span class="pre">get_merge_pairs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.graph.is_descendant_of"><code class="docutils literal notranslate"><span class="pre">is_descendant_of()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.graph.sort_heads_deterministically"><code class="docutils literal notranslate"><span class="pre">sort_heads_deterministically()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.graph.validate_single_base"><code class="docutils literal notranslate"><span class="pre">validate_single_base()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger.merge">alembic_converger.merge module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.merge.create_merge_migration"><code class="docutils literal notranslate"><span class="pre">create_merge_migration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.merge.delete_merge_migration"><code class="docutils literal notranslate"><span class="pre">delete_merge_migration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.merge.has_schema_operations"><code class="docutils literal notranslate"><span class="pre">has_schema_operations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.merge.validate_merge_is_empty"><code class="docutils literal notranslate"><span class="pre">validate_merge_is_empty()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger.utils">alembic_converger.utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.utils.format_revision_id"><code class="docutils literal notranslate"><span class="pre">format_revision_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.utils.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.utils.resolve_config_path"><code class="docutils literal notranslate"><span class="pre">resolve_config_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.utils.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger.validate">alembic_converger.validate module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.validate.check_database_available"><code class="docutils literal notranslate"><span class="pre">check_database_available()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.validate.validate_upgrade"><code class="docutils literal notranslate"><span class="pre">validate_upgrade()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alembic_converger">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.ConfigurationError"><code class="docutils literal notranslate"><span class="pre">ConfigurationError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.ConvergenceError"><code class="docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.MultipleBasesError"><code class="docutils literal notranslate"><span class="pre">MultipleBasesError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.SchemaConflictError"><code class="docutils literal notranslate"><span class="pre">SchemaConflictError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.ValidationError"><code class="docutils literal notranslate"><span class="pre">ValidationError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alembic_converger.converge_migrations"><code class="docutils literal notranslate"><span class="pre">converge_migrations()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">alembic-converger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">alembic_converger</a></li>
+      <li class="breadcrumb-item active">alembic_converger package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/alembic_converger.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="alembic-converger-package">
+<h1>alembic_converger package<a class="headerlink" href="#alembic-converger-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-alembic_converger.cli">
+<span id="alembic-converger-cli-module"></span><h2>alembic_converger.cli module<a class="headerlink" href="#module-alembic_converger.cli" title="Link to this heading"></a></h2>
+<p>Command-line interface for alembic-converger.</p>
+<p>This module provides a Click-based CLI for converging Alembic migrations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.cli.main">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.cli.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alembic_converger/cli.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.cli.main" title="Link to this definition"></a></dt>
+<dd><p>Entry point for the CLI.</p>
+</dd></dl>
+
+</section>
+<section id="module-alembic_converger.config">
+<span id="alembic-converger-config-module"></span><h2>alembic_converger.config module<a class="headerlink" href="#module-alembic_converger.config" title="Link to this heading"></a></h2>
+<p>Alembic configuration loading and validation.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.config.get_revision_map">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.config.</span></span><span class="sig-name descname"><span class="pre">get_revision_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ScriptDirectory</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RevisionMap</span></span></span><a class="reference internal" href="_modules/alembic_converger/config.html#get_revision_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.config.get_revision_map" title="Link to this definition"></a></dt>
+<dd><p>Get RevisionMap from ScriptDirectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>script_dir</strong> – ScriptDirectory instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>RevisionMap instance for graph traversal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.config.get_script_directory">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.config.</span></span><span class="sig-name descname"><span class="pre">get_script_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Config</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ScriptDirectory</span></span></span><a class="reference internal" href="_modules/alembic_converger/config.html#get_script_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.config.get_script_directory" title="Link to this definition"></a></dt>
+<dd><p>Get ScriptDirectory instance from Alembic config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> – Alembic Config object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ScriptDirectory instance.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#alembic_converger.errors.ConfigurationError" title="alembic_converger.errors.ConfigurationError"><strong>ConfigurationError</strong></a> – If script directory cannot be created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.config.load_alembic_config">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.config.</span></span><span class="sig-name descname"><span class="pre">load_alembic_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Config</span></span></span><a class="reference internal" href="_modules/alembic_converger/config.html#load_alembic_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.config.load_alembic_config" title="Link to this definition"></a></dt>
+<dd><p>Load Alembic configuration from file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_path</strong> – Path to alembic.ini file. If None, uses alembic.ini
+in current directory.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Alembic Config object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#alembic_converger.errors.ConfigurationError" title="alembic_converger.errors.ConfigurationError"><strong>ConfigurationError</strong></a> – If configuration cannot be loaded.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-alembic_converger.converge">
+<span id="alembic-converger-converge-module"></span><h2>alembic_converger.converge module<a class="headerlink" href="#module-alembic_converger.converge" title="Link to this heading"></a></h2>
+<p>Core convergence algorithm for Alembic migration graphs.</p>
+<p>This module orchestrates the entire convergence process:
+1. Load configuration and revision map
+2. Find heads descending from base revision
+3. Iteratively merge heads until only one remains
+4. Validate after each merge</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="alembic_converger.converge.ConvergenceResult">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.converge.</span></span><span class="sig-name descname"><span class="pre">ConvergenceResult</span></span><a class="reference internal" href="_modules/alembic_converger/converge.html#ConvergenceResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.converge.ConvergenceResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Result of a convergence operation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.converge.converge_migrations">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.converge.</span></span><span class="sig-name descname"><span class="pre">converge_migrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alembic_converger.converge.ConvergenceResult" title="alembic_converger.converge.ConvergenceResult"><span class="pre">ConvergenceResult</span></a></span></span><a class="reference internal" href="_modules/alembic_converger/converge.html#converge_migrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.converge.converge_migrations" title="Link to this definition"></a></dt>
+<dd><p>Converge multiple Alembic migration heads into a single head.</p>
+<p>This is the main entry point for the convergence algorithm.</p>
+<p>Algorithm:
+1. Load Alembic configuration and revision map
+2. Find all heads descending from base_revision
+3. If 0 or 1 heads, return (already converged)
+4. Validate all heads share a common base
+5. While more than one head exists:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Pick two heads (deterministically)</p></li>
+<li><p>Create merge migration</p></li>
+<li><p>Validate merge is empty (no schema ops)</p></li>
+<li><p>Optionally validate upgrade path</p></li>
+<li><p>Reload revision map</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="6">
+<li><p>Return convergence result</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_revision</strong> – Base revision to converge from. All heads must descend
+from this revision.</p></li>
+<li><p><strong>config_path</strong> – Path to alembic.ini file. If None, uses “alembic.ini”
+in current directory.</p></li>
+<li><p><strong>dry_run</strong> – If True, show what would be done without making changes.</p></li>
+<li><p><strong>skip_validation</strong> – If True, skip upgrade validation (faster but less safe).</p></li>
+<li><p><strong>verbose</strong> – If True, enable debug logging.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ConvergenceResult object with details about the convergence.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><strong>ConvergenceError</strong></a> – If convergence fails for any reason.</p></li>
+<li><p><a class="reference internal" href="#alembic_converger.errors.ConfigurationError" title="alembic_converger.errors.ConfigurationError"><strong>ConfigurationError</strong></a> – If Alembic configuration is invalid.</p></li>
+<li><p><a class="reference internal" href="#alembic_converger.errors.MultipleBasesError" title="alembic_converger.errors.MultipleBasesError"><strong>MultipleBasesError</strong></a> – If heads have unrelated bases.</p></li>
+<li><p><a class="reference internal" href="#alembic_converger.errors.ValidationError" title="alembic_converger.errors.ValidationError"><strong>ValidationError</strong></a> – If upgrade validation fails.</p></li>
+<li><p><a class="reference internal" href="#alembic_converger.errors.SchemaConflictError" title="alembic_converger.errors.SchemaConflictError"><strong>SchemaConflictError</strong></a> – If merge contains schema operations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-alembic_converger.errors">
+<span id="alembic-converger-errors-module"></span><h2>alembic_converger.errors module<a class="headerlink" href="#module-alembic_converger.errors" title="Link to this heading"></a></h2>
+<p>Custom exceptions for the alembic-converger package.</p>
+<p>All exceptions inherit from ConvergenceError for easy catching.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.errors.ConfigurationError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigurationError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#ConfigurationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.errors.ConfigurationError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when Alembic configuration is invalid or cannot be loaded.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.errors.ConvergenceError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.errors.</span></span><span class="sig-name descname"><span class="pre">ConvergenceError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#ConvergenceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.errors.ConvergenceError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Base exception for all convergence-related errors.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.errors.GraphError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.errors.</span></span><span class="sig-name descname"><span class="pre">GraphError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#GraphError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.errors.GraphError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when migration graph analysis fails.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.errors.MultipleBasesError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.errors.</span></span><span class="sig-name descname"><span class="pre">MultipleBasesError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#MultipleBasesError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.errors.MultipleBasesError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when multiple unrelated base revisions are detected.</p>
+<p>This indicates that the migration heads do not share a common ancestor,
+which makes automatic convergence unsafe.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.errors.SchemaConflictError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.errors.</span></span><span class="sig-name descname"><span class="pre">SchemaConflictError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#SchemaConflictError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.errors.SchemaConflictError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when a merge migration contains schema operations.</p>
+<p>Merge migrations should only contain graph operations (down_revision tuple).
+Schema operations indicate conflicts that require manual resolution.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.errors.ValidationError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.errors.</span></span><span class="sig-name descname"><span class="pre">ValidationError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#ValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.errors.ValidationError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when migration upgrade validation fails.</p>
+<p>This typically indicates that the merge migration created conflicts
+or that the upgrade path is broken.</p>
+</dd></dl>
+
+</section>
+<section id="module-alembic_converger.graph">
+<span id="alembic-converger-graph-module"></span><h2>alembic_converger.graph module<a class="headerlink" href="#module-alembic_converger.graph" title="Link to this heading"></a></h2>
+<p>Migration graph analysis and traversal utilities.</p>
+<p>This module provides functions for analyzing the Alembic migration DAG,
+including head detection, ancestor queries, and graph validation.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.graph.get_common_ancestor">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.graph.</span></span><span class="sig-name descname"><span class="pre">get_common_ancestor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">revision_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RevisionMap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rev1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rev2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/alembic_converger/graph.html#get_common_ancestor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.graph.get_common_ancestor" title="Link to this definition"></a></dt>
+<dd><p>Find the lowest common ancestor of two revisions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>revision_map</strong> – Alembic RevisionMap instance.</p></li>
+<li><p><strong>rev1</strong> – First revision ID.</p></li>
+<li><p><strong>rev2</strong> – Second revision ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Common ancestor revision ID, or None if no common ancestor exists.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.graph.get_heads_from_base">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.graph.</span></span><span class="sig-name descname"><span class="pre">get_heads_from_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">revision_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RevisionMap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/alembic_converger/graph.html#get_heads_from_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.graph.get_heads_from_base" title="Link to this definition"></a></dt>
+<dd><p>Find all heads that descend from the given base revision.</p>
+<p>A head is a revision with no descendants. This function finds all heads
+that can be reached by traversing forward from the base revision.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>revision_map</strong> – Alembic RevisionMap instance.</p></li>
+<li><p><strong>base_revision</strong> – Starting revision ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of head revision IDs that descend from base.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#alembic_converger.errors.GraphError" title="alembic_converger.errors.GraphError"><strong>GraphError</strong></a> – If base revision doesn’t exist or graph traversal fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.graph.get_merge_pairs">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.graph.</span></span><span class="sig-name descname"><span class="pre">get_merge_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/alembic_converger/graph.html#get_merge_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.graph.get_merge_pairs" title="Link to this definition"></a></dt>
+<dd><p>Generate pairs of heads to merge.</p>
+<p>For efficient convergence, we merge heads pairwise until only one remains.
+This generates the minimal number of merge operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>heads</strong> – List of head revision IDs (should be sorted deterministically).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of (head1, head2) tuples to merge.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.graph.is_descendant_of">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.graph.</span></span><span class="sig-name descname"><span class="pre">is_descendant_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">revision_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RevisionMap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancestor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/alembic_converger/graph.html#is_descendant_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.graph.is_descendant_of" title="Link to this definition"></a></dt>
+<dd><p>Check if revision is a descendant of ancestor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>revision_map</strong> – Alembic RevisionMap instance.</p></li>
+<li><p><strong>revision</strong> – Revision to check.</p></li>
+<li><p><strong>ancestor</strong> – Potential ancestor revision.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if revision descends from ancestor, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.graph.sort_heads_deterministically">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.graph.</span></span><span class="sig-name descname"><span class="pre">sort_heads_deterministically</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/alembic_converger/graph.html#sort_heads_deterministically"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.graph.sort_heads_deterministically" title="Link to this definition"></a></dt>
+<dd><p>Sort heads deterministically for reproducible convergence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>heads</strong> – List of head revision IDs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sorted list of head revision IDs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.graph.validate_single_base">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.graph.</span></span><span class="sig-name descname"><span class="pre">validate_single_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">revision_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RevisionMap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/alembic_converger/graph.html#validate_single_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.graph.validate_single_base" title="Link to this definition"></a></dt>
+<dd><p>Validate that all heads share a single common base.</p>
+<p>This ensures that the heads can be safely merged - they must all
+descend from a common ancestor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>revision_map</strong> – Alembic RevisionMap instance.</p></li>
+<li><p><strong>heads</strong> – List of head revision IDs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#alembic_converger.errors.MultipleBasesError" title="alembic_converger.errors.MultipleBasesError"><strong>MultipleBasesError</strong></a> – If heads have multiple unrelated bases.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-alembic_converger.merge">
+<span id="alembic-converger-merge-module"></span><h2>alembic_converger.merge module<a class="headerlink" href="#module-alembic_converger.merge" title="Link to this heading"></a></h2>
+<p>Merge migration creation using Alembic’s Python API.</p>
+<p>This module handles the creation of merge migrations and validation
+that they contain only graph operations (no schema changes).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.merge.create_merge_migration">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.merge.</span></span><span class="sig-name descname"><span class="pre">create_merge_migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ScriptDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/alembic_converger/merge.html#create_merge_migration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.merge.create_merge_migration" title="Link to this definition"></a></dt>
+<dd><p>Create a merge migration for the given heads.</p>
+<p>Uses Alembic’s command.merge() to generate a merge migration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> – Alembic Config object.</p></li>
+<li><p><strong>script_dir</strong> – ScriptDirectory instance.</p></li>
+<li><p><strong>heads</strong> – List of head revision IDs to merge (typically 2).</p></li>
+<li><p><strong>message</strong> – Optional merge message. If None, auto-generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Revision ID of the created merge migration.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#alembic_converger.errors.SchemaConflictError" title="alembic_converger.errors.SchemaConflictError"><strong>SchemaConflictError</strong></a> – If the merge contains schema operations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.merge.delete_merge_migration">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.merge.</span></span><span class="sig-name descname"><span class="pre">delete_merge_migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ScriptDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/alembic_converger/merge.html#delete_merge_migration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.merge.delete_merge_migration" title="Link to this definition"></a></dt>
+<dd><p>Delete a merge migration file (used for rollback on failure).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>script_dir</strong> – ScriptDirectory instance.</p></li>
+<li><p><strong>revision</strong> – Revision ID to delete.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.merge.has_schema_operations">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.merge.</span></span><span class="sig-name descname"><span class="pre">has_schema_operations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">migration_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/alembic_converger/merge.html#has_schema_operations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.merge.has_schema_operations" title="Link to this definition"></a></dt>
+<dd><p>Check if migration content contains schema operations.</p>
+<p>A clean merge should have empty upgrade() and downgrade() functions
+with only ‘pass’ statements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>migration_content</strong> – Content of the migration file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if schema operations are found, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.merge.validate_merge_is_empty">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.merge.</span></span><span class="sig-name descname"><span class="pre">validate_merge_is_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ScriptDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/alembic_converger/merge.html#validate_merge_is_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.merge.validate_merge_is_empty" title="Link to this definition"></a></dt>
+<dd><p>Validate that a merge migration contains no schema operations.</p>
+<p>Merge migrations should only update the down_revision tuple to point
+to multiple parents. They should not contain any upgrade() or downgrade()
+operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>script_dir</strong> – ScriptDirectory instance.</p></li>
+<li><p><strong>revision</strong> – Revision ID to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#alembic_converger.errors.SchemaConflictError" title="alembic_converger.errors.SchemaConflictError"><strong>SchemaConflictError</strong></a> – If the merge contains schema operations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-alembic_converger.utils">
+<span id="alembic-converger-utils-module"></span><h2>alembic_converger.utils module<a class="headerlink" href="#module-alembic_converger.utils" title="Link to this heading"></a></h2>
+<p>Utility functions for the alembic-converger package.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.utils.format_revision_id">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.utils.</span></span><span class="sig-name descname"><span class="pre">format_revision_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/alembic_converger/utils.html#format_revision_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.utils.format_revision_id" title="Link to this definition"></a></dt>
+<dd><p>Format a revision ID for display.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>revision</strong> – Revision ID or None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.utils.get_logger">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.utils.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="reference internal" href="_modules/alembic_converger/utils.html#get_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.utils.get_logger" title="Link to this definition"></a></dt>
+<dd><p>Get the package logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Logger instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.utils.resolve_config_path">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.utils.</span></span><span class="sig-name descname"><span class="pre">resolve_config_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/alembic_converger/utils.html#resolve_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.utils.resolve_config_path" title="Link to this definition"></a></dt>
+<dd><p>Resolve the Alembic configuration file path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_path</strong> – Path to alembic.ini file. If None, looks for alembic.ini
+in the current directory.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Resolved Path object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FileNotFoundError</strong> – If the configuration file doesn’t exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.utils.setup_logging">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.utils.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="reference internal" href="_modules/alembic_converger/utils.html#setup_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.utils.setup_logging" title="Link to this definition"></a></dt>
+<dd><p>Set up logging for the package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>verbose</strong> – If True, set log level to DEBUG, otherwise INFO.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Configured logger instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-alembic_converger.validate">
+<span id="alembic-converger-validate-module"></span><h2>alembic_converger.validate module<a class="headerlink" href="#module-alembic_converger.validate" title="Link to this heading"></a></h2>
+<p>Migration validation through upgrade testing.</p>
+<p>This module provides functions to validate that migrations can be
+successfully applied by running upgrade operations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.validate.check_database_available">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.validate.</span></span><span class="sig-name descname"><span class="pre">check_database_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Config</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/alembic_converger/validate.html#check_database_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.validate.check_database_available" title="Link to this definition"></a></dt>
+<dd><p>Check if database is available for validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> – Alembic Config object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if database connection can be established, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.validate.validate_upgrade">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.validate.</span></span><span class="sig-name descname"><span class="pre">validate_upgrade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'head'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_subprocess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/alembic_converger/validate.html#validate_upgrade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.validate.validate_upgrade" title="Link to this definition"></a></dt>
+<dd><p>Validate that upgrade from one revision to another succeeds.</p>
+<p>This runs an actual Alembic upgrade to test the migration path.
+It requires a database connection configured in alembic.ini.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> – Alembic Config object.</p></li>
+<li><p><strong>from_revision</strong> – Starting revision.</p></li>
+<li><p><strong>to_revision</strong> – Target revision (default: “head”).</p></li>
+<li><p><strong>use_subprocess</strong> – If True, use subprocess to isolate the upgrade.
+If False, use Alembic’s command API directly.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#alembic_converger.errors.ValidationError" title="alembic_converger.errors.ValidationError"><strong>ValidationError</strong></a> – If the upgrade fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-alembic_converger">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alembic_converger" title="Link to this heading"></a></h2>
+<p>Alembic Converger - Safely converge Alembic migration graphs.</p>
+<p>This package provides tools to automatically detect and converge multiple Alembic
+migration heads by generating minimal merge migrations without schema operations.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.ConfigurationError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.</span></span><span class="sig-name descname"><span class="pre">ConfigurationError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#ConfigurationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.ConfigurationError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when Alembic configuration is invalid or cannot be loaded.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.ConvergenceError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.</span></span><span class="sig-name descname"><span class="pre">ConvergenceError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#ConvergenceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.ConvergenceError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Base exception for all convergence-related errors.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.MultipleBasesError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.</span></span><span class="sig-name descname"><span class="pre">MultipleBasesError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#MultipleBasesError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.MultipleBasesError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when multiple unrelated base revisions are detected.</p>
+<p>This indicates that the migration heads do not share a common ancestor,
+which makes automatic convergence unsafe.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.SchemaConflictError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.</span></span><span class="sig-name descname"><span class="pre">SchemaConflictError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#SchemaConflictError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.SchemaConflictError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when a merge migration contains schema operations.</p>
+<p>Merge migrations should only contain graph operations (down_revision tuple).
+Schema operations indicate conflicts that require manual resolution.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alembic_converger.ValidationError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">alembic_converger.</span></span><span class="sig-name descname"><span class="pre">ValidationError</span></span><a class="reference internal" href="_modules/alembic_converger/errors.html#ValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.ValidationError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alembic_converger.errors.ConvergenceError" title="alembic_converger.errors.ConvergenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a></p>
+<p>Raised when migration upgrade validation fails.</p>
+<p>This typically indicates that the merge migration created conflicts
+or that the upgrade path is broken.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alembic_converger.converge_migrations">
+<span class="sig-prename descclassname"><span class="pre">alembic_converger.</span></span><span class="sig-name descname"><span class="pre">converge_migrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alembic_converger.converge.ConvergenceResult" title="alembic_converger.converge.ConvergenceResult"><span class="pre">ConvergenceResult</span></a></span></span><a class="reference internal" href="_modules/alembic_converger/converge.html#converge_migrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alembic_converger.converge_migrations" title="Link to this definition"></a></dt>
+<dd><p>Converge multiple Alembic migration heads into a single head.</p>
+<p>This is the main entry point for the convergence algorithm.</p>
+<p>Algorithm:
+1. Load Alembic configuration and revision map
+2. Find all heads descending from base_revision
+3. If 0 or 1 heads, return (already converged)
+4. Validate all heads share a common base
+5. While more than one head exists:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Pick two heads (deterministically)</p></li>
+<li><p>Create merge migration</p></li>
+<li><p>Validate merge is empty (no schema ops)</p></li>
+<li><p>Optionally validate upgrade path</p></li>
+<li><p>Reload revision map</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="6">
+<li><p>Return convergence result</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_revision</strong> – Base revision to converge from. All heads must descend
+from this revision.</p></li>
+<li><p><strong>config_path</strong> – Path to alembic.ini file. If None, uses “alembic.ini”
+in current directory.</p></li>
+<li><p><strong>dry_run</strong> – If True, show what would be done without making changes.</p></li>
+<li><p><strong>skip_validation</strong> – If True, skip upgrade validation (faster but less safe).</p></li>
+<li><p><strong>verbose</strong> – If True, enable debug logging.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ConvergenceResult object with details about the convergence.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#alembic_converger.ConvergenceError" title="alembic_converger.ConvergenceError"><strong>ConvergenceError</strong></a> – If convergence fails for any reason.</p></li>
+<li><p><a class="reference internal" href="#alembic_converger.ConfigurationError" title="alembic_converger.ConfigurationError"><strong>ConfigurationError</strong></a> – If Alembic configuration is invalid.</p></li>
+<li><p><a class="reference internal" href="#alembic_converger.MultipleBasesError" title="alembic_converger.MultipleBasesError"><strong>MultipleBasesError</strong></a> – If heads have unrelated bases.</p></li>
+<li><p><a class="reference internal" href="#alembic_converger.ValidationError" title="alembic_converger.ValidationError"><strong>ValidationError</strong></a> – If upgrade validation fails.</p></li>
+<li><p><a class="reference internal" href="#alembic_converger.SchemaConflictError" title="alembic_converger.SchemaConflictError"><strong>SchemaConflictError</strong></a> – If merge contains schema operations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="alembic_converger" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rishav Sinha.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

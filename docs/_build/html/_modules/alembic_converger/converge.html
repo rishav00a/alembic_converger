@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>alembic_converger.converge &mdash; alembic-converger 0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            alembic-converger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">alembic_converger</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">alembic-converger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">alembic_converger.converge</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for alembic_converger.converge</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Core convergence algorithm for Alembic migration graphs.</span>
+
+<span class="sd">This module orchestrates the entire convergence process:</span>
+<span class="sd">1. Load configuration and revision map</span>
+<span class="sd">2. Find heads descending from base revision</span>
+<span class="sd">3. Iteratively merge heads until only one remains</span>
+<span class="sd">4. Validate after each merge</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic_converger.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_revision_map</span><span class="p">,</span>
+    <span class="n">get_script_directory</span><span class="p">,</span>
+    <span class="n">load_alembic_config</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic_converger.graph</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_heads_from_base</span><span class="p">,</span>
+    <span class="n">sort_heads_deterministically</span><span class="p">,</span>
+    <span class="n">validate_single_base</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic_converger.merge</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_merge_migration</span><span class="p">,</span> <span class="n">delete_merge_migration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic_converger.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_revision_id</span><span class="p">,</span> <span class="n">setup_logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic_converger.validate</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_database_available</span><span class="p">,</span> <span class="n">validate_upgrade</span>
+
+
+<div class="viewcode-block" id="ConvergenceResult">
+<a class="viewcode-back" href="../../alembic_converger.html#alembic_converger.converge.ConvergenceResult">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvergenceResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Result of a convergence operation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_heads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merges_created</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">already_converged</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">already_converged</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Already converged (0 or 1 head)&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Convergence successful:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  Initial heads: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_heads</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  Merges created: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">merges_created</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  Final head: </span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_head</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="converge_migrations">
+<a class="viewcode-back" href="../../alembic_converger.html#alembic_converger.converge.converge_migrations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">converge_migrations</span><span class="p">(</span>
+    <span class="n">base_revision</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">config_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">skip_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConvergenceResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converge multiple Alembic migration heads into a single head.</span>
+
+<span class="sd">    This is the main entry point for the convergence algorithm.</span>
+
+<span class="sd">    Algorithm:</span>
+<span class="sd">    1. Load Alembic configuration and revision map</span>
+<span class="sd">    2. Find all heads descending from base_revision</span>
+<span class="sd">    3. If 0 or 1 heads, return (already converged)</span>
+<span class="sd">    4. Validate all heads share a common base</span>
+<span class="sd">    5. While more than one head exists:</span>
+<span class="sd">       a. Pick two heads (deterministically)</span>
+<span class="sd">       b. Create merge migration</span>
+<span class="sd">       c. Validate merge is empty (no schema ops)</span>
+<span class="sd">       d. Optionally validate upgrade path</span>
+<span class="sd">       e. Reload revision map</span>
+<span class="sd">    6. Return convergence result</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_revision: Base revision to converge from. All heads must descend</span>
+<span class="sd">                      from this revision.</span>
+<span class="sd">        config_path: Path to alembic.ini file. If None, uses &quot;alembic.ini&quot;</span>
+<span class="sd">                    in current directory.</span>
+<span class="sd">        dry_run: If True, show what would be done without making changes.</span>
+<span class="sd">        skip_validation: If True, skip upgrade validation (faster but less safe).</span>
+<span class="sd">        verbose: If True, enable debug logging.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ConvergenceResult object with details about the convergence.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ConvergenceError: If convergence fails for any reason.</span>
+<span class="sd">        ConfigurationError: If Alembic configuration is invalid.</span>
+<span class="sd">        MultipleBasesError: If heads have unrelated bases.</span>
+<span class="sd">        ValidationError: If upgrade validation fails.</span>
+<span class="sd">        SchemaConflictError: If merge contains schema operations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set up logging</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logging</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting Alembic convergence&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Base revision: </span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">base_revision</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dry run: </span><span class="si">{</span><span class="n">dry_run</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skip validation: </span><span class="si">{</span><span class="n">skip_validation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">ConvergenceResult</span><span class="p">()</span>
+    <span class="n">created_merges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 1. Load configuration</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">load_alembic_config</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+        <span class="n">script_dir</span> <span class="o">=</span> <span class="n">get_script_directory</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="c1"># 2. Find all heads from base</span>
+        <span class="n">revision_map</span> <span class="o">=</span> <span class="n">get_revision_map</span><span class="p">(</span><span class="n">script_dir</span><span class="p">)</span>
+        <span class="n">heads</span> <span class="o">=</span> <span class="n">get_heads_from_base</span><span class="p">(</span><span class="n">revision_map</span><span class="p">,</span> <span class="n">base_revision</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">initial_heads</span> <span class="o">=</span> <span class="n">heads</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span><span class="si">}</span><span class="s2"> head(s)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 3. Check if already converged</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Already converged (0 or 1 head)&quot;</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">already_converged</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">final_head</span> <span class="o">=</span> <span class="n">heads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">heads</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="c1"># 4. Validate single base</span>
+        <span class="n">validate_single_base</span><span class="p">(</span><span class="n">revision_map</span><span class="p">,</span> <span class="n">heads</span><span class="p">)</span>
+
+        <span class="c1"># 5. Check database availability for validation</span>
+        <span class="n">db_available</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_validation</span><span class="p">:</span>
+            <span class="n">db_available</span> <span class="o">=</span> <span class="n">check_database_available</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">db_available</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Database not available - skipping upgrade validation. &quot;</span>
+                    <span class="s2">&quot;Use --skip-validation to suppress this warning.&quot;</span>
+                <span class="p">)</span>
+                <span class="n">skip_validation</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DRY RUN: Would create the following merges:&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 6. Iteratively merge heads</span>
+        <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Iteration </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2"> ---&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current heads: </span><span class="si">{</span><span class="p">[</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">heads</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Sort heads deterministically</span>
+            <span class="n">heads</span> <span class="o">=</span> <span class="n">sort_heads_deterministically</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span>
+
+            <span class="c1"># Pick first two heads to merge</span>
+            <span class="n">head1</span><span class="p">,</span> <span class="n">head2</span> <span class="o">=</span> <span class="n">heads</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">heads</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Merging: </span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">head1</span><span class="p">)</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">head2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+                <span class="c1"># In dry run, simulate merge</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  [DRY RUN] Would create merge of </span><span class="si">{</span><span class="n">head1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">head2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># Assume merge succeeds and remove the two heads</span>
+                <span class="n">heads</span> <span class="o">=</span> <span class="n">heads</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+                <span class="c1"># Add a simulated merge head</span>
+                <span class="n">simulated_merge</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;merge_</span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                <span class="n">heads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">simulated_merge</span><span class="p">)</span>
+                <span class="n">created_merges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">simulated_merge</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Create actual merge</span>
+                <span class="n">merge_rev</span> <span class="o">=</span> <span class="n">create_merge_migration</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">script_dir</span><span class="p">,</span> <span class="p">[</span><span class="n">head1</span><span class="p">,</span> <span class="n">head2</span><span class="p">])</span>
+                <span class="n">created_merges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">merge_rev</span><span class="p">)</span>
+
+                <span class="c1"># Validate upgrade if requested</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_validation</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Validating upgrade path...&quot;</span><span class="p">)</span>
+                    <span class="n">validate_upgrade</span><span class="p">(</span>
+                        <span class="n">config</span><span class="p">,</span> <span class="n">base_revision</span><span class="p">,</span> <span class="s2">&quot;head&quot;</span><span class="p">,</span> <span class="n">use_subprocess</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Reload revision map to see new merge</span>
+                <span class="n">script_dir</span> <span class="o">=</span> <span class="n">get_script_directory</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+                <span class="n">revision_map</span> <span class="o">=</span> <span class="n">get_revision_map</span><span class="p">(</span><span class="n">script_dir</span><span class="p">)</span>
+                <span class="n">heads</span> <span class="o">=</span> <span class="n">get_heads_from_base</span><span class="p">(</span><span class="n">revision_map</span><span class="p">,</span> <span class="n">base_revision</span><span class="p">)</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;After merge: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span><span class="si">}</span><span class="s2"> head(s) remaining&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 7. Success</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">merges_created</span> <span class="o">=</span> <span class="n">created_merges</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">final_head</span> <span class="o">=</span> <span class="n">heads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">heads</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Convergence complete!&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_merges</span><span class="p">)</span><span class="si">}</span><span class="s2"> merge migration(s)&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final head: </span><span class="si">{</span><span class="n">format_revision_id</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">final_head</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># Rollback on failure (delete created merges)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dry_run</span> <span class="ow">and</span> <span class="n">created_merges</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Convergence failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Rolling back created merge migrations...&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">merge_rev</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">created_merges</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">delete_merge_migration</span><span class="p">(</span><span class="n">script_dir</span><span class="p">,</span> <span class="n">merge_rev</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">cleanup_error</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to clean up </span><span class="si">{</span><span class="n">merge_rev</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">cleanup_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">raise</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rishav Sinha.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
